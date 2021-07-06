@@ -5,7 +5,7 @@ pub struct List {
 }
 impl List {
     pub fn new() -> Self {
-        List { head: Link::Empty }
+        Self { head: Link::Empty }
     }
 
     pub fn push(&mut self, elem: i32) {

@@ -13,7 +13,7 @@ impl<T> Drop for List<T> {
 }
 impl<T> List<T> {
     pub fn new() -> Self {
-        List { head: None }
+        Self { head: None }
     }
 
     pub fn push(&mut self, elem: T) {
