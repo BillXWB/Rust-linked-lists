@@ -25,6 +25,14 @@ impl List {
         }
     }
 }
+impl Drop for List {
+    fn drop(&mut self) {
+        let mut cur_link = replace(&mut self.head, Link::Empty);
+        while let Link::More(mut boxed_node) = cur_link {
+            cur_link = replace(&mut boxed_node.next, Link::Empty);
+        }
+    }
+}
 
 enum Link {
     Empty,
