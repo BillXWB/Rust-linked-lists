@@ -8,6 +8,14 @@ struct Node<T> {
     elem: T,
     next: Link<T>,
 }
+impl<T> Drop for List<T> {
+    fn drop(&mut self) {
+        let mut head = self.head.take();
+        while let Some(Ok(mut node)) = head.map(|node| Rc::try_unwrap(node)) {
+            head = node.next.take();
+        }
+    }
+}
 impl<T> List<T> {
     pub fn new() -> Self {
         Self { head: None }
