@@ -9,28 +9,32 @@ impl List {
     }
 
     pub fn push(&mut self, elem: i32) {
-        let new_node = Node {
+        let new_node = Box::new(Node {
             elem,
             next: replace(&mut self.head, Link::Empty),
-        };
-        self.head = Link::More(Box::new(new_node));
+        });
+        self.head = Link::More(new_node);
     }
     pub fn pop(&mut self) -> Option<i32> {
-        match replace(&mut self.head, Link::Empty) {
+        match self.pop_node() {
             Link::Empty => None,
-            Link::More(node) => {
-                self.head = node.next;
-                Some(node.elem)
+            Link::More(node) => Some(node.elem),
+        }
+    }
+
+    fn pop_node(&mut self) -> Link {
+        match replace(&mut self.head, Link::Empty) {
+            Link::Empty => Link::Empty,
+            Link::More(mut node) => {
+                self.head = replace(&mut node.next, Link::Empty);
+                Link::More(node)
             }
         }
     }
 }
 impl Drop for List {
     fn drop(&mut self) {
-        let mut cur_link = replace(&mut self.head, Link::Empty);
-        while let Link::More(mut boxed_node) = cur_link {
-            cur_link = replace(&mut boxed_node.next, Link::Empty);
-        }
+        while let Link::More(_) = self.pop_node() {}
     }
 }
 
