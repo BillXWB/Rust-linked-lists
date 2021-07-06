@@ -1,9 +1,9 @@
-use std::rc::Rc;
+use std::sync::Arc;
 
 pub struct List<T> {
     head: Link<T>,
 }
-type Link<T> = Option<Rc<Node<T>>>;
+type Link<T> = Option<Arc<Node<T>>>;
 struct Node<T> {
     elem: T,
     next: Link<T>,
@@ -11,7 +11,7 @@ struct Node<T> {
 impl<T> Drop for List<T> {
     fn drop(&mut self) {
         let mut head = self.head.take();
-        while let Some(Ok(mut node)) = head.map(|node| Rc::try_unwrap(node)) {
+        while let Some(Ok(mut node)) = head.map(|node| Arc::try_unwrap(node)) {
             head = node.next.take();
         }
     }
@@ -23,7 +23,7 @@ impl<T> List<T> {
 
     pub fn prepend(&self, elem: T) -> Self {
         Self {
-            head: Some(Rc::new(Node {
+            head: Some(Arc::new(Node {
                 elem,
                 next: self.head.clone(),
             })),
