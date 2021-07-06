@@ -76,6 +76,27 @@ impl<'this, T> Iterator for Iter<'this, T> {
     }
 }
 
+pub struct IterMut<'this, T> {
+    next: Option<&'this mut Node<T>>,
+}
+impl<T> List<T> {
+    pub fn iter_mut(&mut self) -> IterMut<'_, T> {
+        IterMut {
+            next: self.head.as_deref_mut(),
+        }
+    }
+}
+impl<'this, T> Iterator for IterMut<'this, T> {
+    type Item = &'this mut T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.next.take().map(|node| {
+            self.next = node.next.as_deref_mut();
+            &mut node.elem
+        })
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::List;
@@ -139,5 +160,21 @@ mod test {
         assert_eq!(iter.next(), Some(&2));
         assert_eq!(iter.next(), Some(&1));
         assert_eq!(list.peek(), Some(&3));
+    }
+    #[test]
+    fn iter_mut() {
+        let mut list = List::new();
+        list.push(1);
+        list.push(2);
+        list.push(3);
+
+        let mut iter = list.iter_mut();
+        assert_eq!(iter.next(), Some(&mut 3));
+        assert_eq!(iter.next(), Some(&mut 2));
+        assert_eq!(iter.next(), Some(&mut 1));
+
+        iter = list.iter_mut();
+        iter.for_each(|value| *value = 4);
+        assert_eq!(list.peek(), Some(&4));
     }
 }
