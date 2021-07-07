@@ -3,6 +3,19 @@ use std::mem::replace;
 pub struct List {
     head: Link,
 }
+enum Link {
+    Empty,
+    More(Box<Node>),
+}
+struct Node {
+    elem: i32,
+    next: Link,
+}
+impl Drop for List {
+    fn drop(&mut self) {
+        while let Link::More(_) = self.pop_node() {}
+    }
+}
 impl List {
     pub fn new() -> Self {
         Self { head: Link::Empty }
@@ -32,19 +45,10 @@ impl List {
         }
     }
 }
-impl Drop for List {
-    fn drop(&mut self) {
-        while let Link::More(_) = self.pop_node() {}
+impl Default for List {
+    fn default() -> Self {
+        Self::new()
     }
-}
-
-enum Link {
-    Empty,
-    More(Box<Node>),
-}
-struct Node {
-    elem: i32,
-    next: Link,
 }
 
 #[cfg(test)]

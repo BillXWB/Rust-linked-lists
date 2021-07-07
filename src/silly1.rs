@@ -51,6 +51,11 @@ impl<T> List<T> {
             .is_some()
     }
 }
+impl<T> Default for List<T> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 
 pub struct Stack<T> {
     head: Link<T>,
@@ -96,6 +101,11 @@ impl<T> Stack<T> {
             self.head = head.next.take();
             head
         })
+    }
+}
+impl<T> Default for Stack<T> {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

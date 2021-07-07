@@ -40,10 +40,18 @@ impl<T> List<T> {
         })
     }
 }
+impl<T> Default for List<T> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 
 pub struct IntoIter<T>(List<T>);
-impl<T> List<T> {
-    pub fn into_iter(self) -> IntoIter<T> {
+impl<T> IntoIterator for List<T> {
+    type IntoIter = IntoIter<T>;
+    type Item = T;
+
+    fn into_iter(self) -> IntoIter<T> {
         IntoIter(self)
     }
 }

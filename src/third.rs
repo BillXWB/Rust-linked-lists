@@ -11,7 +11,7 @@ struct Node<T> {
 impl<T> Drop for List<T> {
     fn drop(&mut self) {
         let mut head = self.head.take();
-        while let Some(Ok(mut node)) = head.map(|node| Arc::try_unwrap(node)) {
+        while let Some(Ok(mut node)) = head.map(Arc::try_unwrap) {
             head = node.next.take();
         }
     }
@@ -36,6 +36,11 @@ impl<T> List<T> {
         Self {
             head: self.head.as_ref().and_then(|node| node.next.clone()),
         }
+    }
+}
+impl<T> Default for List<T> {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
