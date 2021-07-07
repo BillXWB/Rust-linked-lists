@@ -8,7 +8,7 @@ struct Node<T> {
 }
 impl<T> Drop for List<T> {
     fn drop(&mut self) {
-        while let Some(_) = self.pop_node() {}
+        while self.pop_node().is_some() {}
     }
 }
 impl<T> List<T> {

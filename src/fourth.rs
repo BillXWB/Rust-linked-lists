@@ -19,6 +19,11 @@ impl<T> Node<T> {
         }))
     }
 }
+impl<T> Drop for List<T> {
+    fn drop(&mut self) {
+        while self.pop_front().is_some() {}
+    }
+}
 impl<T> List<T> {
     pub fn new() -> Self {
         List {
@@ -40,5 +45,43 @@ impl<T> List<T> {
                 self.head = Some(new_head);
             }
         }
+    }
+    pub fn pop_front(&mut self) -> Option<T> {
+        self.head.take().map(|old_head| {
+            match old_head.borrow_mut().next.take() {
+                Some(new_head) => {
+                    new_head.borrow_mut().prev.take();
+                    self.head = Some(new_head);
+                }
+                None => {
+                    self.tail.take();
+                }
+            }
+            Rc::try_unwrap(old_head).ok().unwrap().into_inner().elem
+        })
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::List;
+
+    #[test]
+    fn basics() {
+        let mut list = List::new();
+        assert_eq!(list.pop_front(), None);
+
+        list.push_front(1);
+        list.push_front(2);
+        list.push_front(3);
+        assert_eq!(list.pop_front(), Some(3));
+        assert_eq!(list.pop_front(), Some(2));
+
+        list.push_front(4);
+        list.push_front(5);
+        assert_eq!(list.pop_front(), Some(5));
+        assert_eq!(list.pop_front(), Some(4));
+        assert_eq!(list.pop_front(), Some(1));
+        assert_eq!(list.pop_front(), None);
     }
 }
