@@ -15,7 +15,7 @@ struct Node<T> {
 }
 impl<T> Node<T> {
     fn new(elem: T) -> Rc<RefCell<Self>> {
-        Rc::new(RefCell::new(Node {
+        Rc::new(RefCell::new(Self {
             elem,
             prev: None,
             next: None,
@@ -29,7 +29,7 @@ impl<T> Drop for List<T> {
 }
 impl<T> List<T> {
     pub fn new() -> Self {
-        List {
+        Self {
             head: None,
             tail: None,
         }
